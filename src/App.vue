@@ -4,7 +4,7 @@
       <WeatherDay/>
       <WeatherWeek/>
     </div>
-
+    {{ weatherList }}
   </div>
 
 </template>
@@ -12,18 +12,13 @@
 <script lang="ts" setup>
 import WeatherDay from './components/WeatherDay.vue'
 import WeatherWeek from './components/WeatherWeek.vue'
-// import axios from 'axios'
-// import { ref } from 'vue';
-// const posts = ref()
-// const apiKey = '6313d9cc37298aba5399fe5522aba6aa'
-//
-// axios.get(`https://api.openweathermap.org/data/2.5/forecast?q=Moscow&lang=ru&appid=${apiKey}&units=metric`)
-//     .then(response => {
-//       posts.value = response.data
-//     })
-//     .catch(e => {
-//       console.log(e)
-//     })
+import {useWeatherStore} from "@/stores/WeatherStore";
+const weatherStore = useWeatherStore()
+setTimeout(() => {
+  console.log(weatherStore.weatherList)
+  console.log(weatherStore.city)
+}, 500)
+
 </script>
 
 <style>
