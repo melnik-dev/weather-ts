@@ -1,10 +1,13 @@
 <template>
   <div class="container">
     <div class="weather__wrapper">
-      <WeatherDay/>
-      <WeatherWeek/>
+      <WeatherDay
+          :city="weatherStore.weather.city"
+          :country="weatherStore.weather.country"
+          :currentDay="currentDay"
+      />
+      <WeatherWeek @onChangeDate="onChangeDate"/>
     </div>
-    {{ weatherList }}
   </div>
 
 </template>
@@ -13,19 +16,31 @@
 import WeatherDay from './components/WeatherDay.vue'
 import WeatherWeek from './components/WeatherWeek.vue'
 import {useWeatherStore} from "@/stores/WeatherStore";
-const weatherStore = useWeatherStore()
-setTimeout(() => {
-  console.log(weatherStore.weatherList)
-  console.log(weatherStore.city)
-}, 500)
+import {ref} from "vue";
+import oneWeatherDay from "@/types/oneWeatherDay";
 
+const weatherStore = useWeatherStore()
+
+const currentDay = ref<oneWeatherDay>({
+  fullDate: '25 февр. 2023 г.',
+  weekLong: 'суббота',
+  icon: '01d',
+  temp: 22,
+  description: 'солнечно',
+})
+
+function onChangeDate(payload: oneWeatherDay) {
+  currentDay.value = payload
+}
 </script>
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&display=swap');
+
 * {
   box-sizing: border-box;
 }
+
 body {
   background: #343D4B;
   font-family: 'Montserrat';

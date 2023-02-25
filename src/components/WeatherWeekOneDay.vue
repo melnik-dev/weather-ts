@@ -1,14 +1,50 @@
 <template>
-  <button class="week__btn-setday">
-    <img class="week__btn-icon" src="http://openweathermap.org/img/wn/10d@2x.png" alt="day">
-    <span class="week__btn-title">Tue</span>
-    <span class="week__btn-degrees">30 °C</span>
+  <button
+      class="week__btn-setday"
+      :class="{'week__btn-setday--active': isActiveDay}"
+      @click="onChangeDate(currentDay)">
+    <img class="week__btn-icon" :src="`http://openweathermap.org/img/wn/${day.weather[0].icon}@2x.png`" alt="day">
+    <span class="week__btn-title">{{ weekShort }}</span>
+    <span class="week__btn-degrees">{{ Math.round(day.main.temp) }} °C</span>
   </button>
 </template>
 
-<script>
-export default {
-  name: "WeatherWeekOneDay"
+<script lang="ts" setup>
+import {defineEmits, defineProps, ref} from "vue";
+import oneWeatherDay from "@/types/oneWeatherDay";
+
+const props = defineProps<{
+  day: any
+  id: number
+  isActiveDay: boolean
+}>()
+const emit = defineEmits<{
+  (e: 'onChangeDate', payload: oneWeatherDay): void
+}>()
+
+let date = new Date(props.day.dt_txt)
+let optionWeekLong = {weekday: 'long'} as const
+let optionWeekShort = {weekday: 'short'} as const
+let optionFullDate = {day: 'numeric', month: 'short',  year: 'numeric'} as const
+let weekLong = new Intl.DateTimeFormat('ru', optionWeekLong).format(date);
+let weekShort = new Intl.DateTimeFormat('ru', optionWeekShort).format(date);
+let fullDate = new Intl.DateTimeFormat('ru', optionFullDate).format(date);
+
+const currentDay = ref({
+  fullDate,
+  weekLong,
+  icon: props.day.weather[0].icon,
+  temp: props.day.main.temp,
+  description: props.day.weather[0].description,
+  pressure: props.day.main.pressure,
+  humidity: props.day.main.humidity,
+  wind: props.day.wind.speed
+})
+function onChangeDate(payload: oneWeatherDay) {
+  emit('onChangeDate', payload)
+}
+if(props.id === 0) {
+  onChangeDate(currentDay.value)
 }
 </script>
 

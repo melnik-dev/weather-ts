@@ -1,26 +1,28 @@
 import {defineStore} from 'pinia'
-import {reactive, ref} from "vue";
+import {reactive} from "vue";
 import axios from 'axios'
+import Weather from '@/types/Weather'
+
 
 export const useWeatherStore = defineStore('weatherStore', () => {
-    const city = reactive({
-        name: '',
-        country: ''
+    const weather: Weather = reactive({
+        city: '',
+        country: '',
+        list: []
     })
-    const weatherList = ref<any[]>([])
     const apiKey = '6313d9cc37298aba5399fe5522aba6aa'
 
     axios.get(`https://api.openweathermap.org/data/2.5/forecast?q=Moscow&lang=ru&cnt=25&appid=${apiKey}&units=metric`)
         .then(response => {
-            city.name = response.data.city.name
-            city.country = response.data.city.country
-            for (let i = 0; i <= response.data.list.length; i+=8) {
-                weatherList.value.push(response.data.list[i])
+            weather.city = response.data.city.name
+            weather.country = response.data.city.country
+            for (let i = 0; i <= response.data.list.length; i += 8) {
+                weather.list.push(response.data.list[i])
             }
         })
         .catch(e => {
             console.log(e)
         })
 
-    return { city, weatherList }
+    return {weather}
 })

@@ -1,23 +1,31 @@
 <template>
   <div class="weather__day day">
     <div class="day__header">
-      <h1 class="day__title">Tuesday</h1>
-      <p class="day__subtitle">20 Jun 2022</p>
+      <h1 class="day__title">{{ firstLetter(currentDay.weekLong) }}</h1>
+      <p class="day__subtitle">{{ currentDay.fullDate }}</p>
       <p class="day__locatio">
         <img class="day__icon-location" src="@/assets/location.png" alt="">
-        Biarritz, FR</p>
+        {{ city}}, {{ country }}</p>
     </div>
     <div class="day__footer">
-      <img class="day__icon" src="http://openweathermap.org/img/wn/10d@4x.png" alt="Sunny">
-      <p class="day__degrees">29 °C</p>
-      <p class="day__weather">Sunny</p>
+      <img class="day__icon" :src="`http://openweathermap.org/img/wn/${ currentDay.icon }@4x.png`" alt="Sunny">
+      <p class="day__degrees">{{ Math.round(currentDay.temp) }} °C</p>
+      <p class="day__weather">{{ firstLetter(currentDay.description) }}</p>
     </div>
   </div>
 </template>
 
-<script>
-export default {
-  name: "WeatherDay"
+<script lang="ts" setup>
+import {defineProps} from "vue";
+import oneWeatherDay from "@/types/oneWeatherDay";
+
+const props = defineProps<{
+  city: string,
+  country: string,
+  currentDay: oneWeatherDay
+}>()
+function firstLetter(word:string):string {
+  return word[0].toUpperCase() + word.slice(1)
 }
 </script>
 
@@ -56,7 +64,7 @@ margin: 0;
   margin-bottom: 10px!important;
 }
 .day__icon {
-  margin-left: -50px;
+  margin-left: -30px;
   margin-bottom: -40px;
 }
 .day__degrees {
