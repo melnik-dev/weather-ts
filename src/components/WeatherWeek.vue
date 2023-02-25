@@ -59,7 +59,7 @@ function onChangeDate(payload: oneWeatherDay) {
   emit('onChangeDate', payload)
 }
 
-function changeActiveDay(i: number) {
+function changeActiveDay(i: number): void {
   isActiveDay.value = [false, false, false, false]
   isActiveDay.value[i] = true
 }
