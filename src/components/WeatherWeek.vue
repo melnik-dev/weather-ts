@@ -14,7 +14,7 @@
         <span class="week__option--sybtitle">{{ wind }} м/cек</span>
       </div>
     </div>
-    <div v-if="weatherStore.weather.city"  class="week__change-week">
+    <div v-if="weatherStore.weather.city" class="week__change-week">
       <WeatherWeekOneDay
           v-for="(day,i) in weatherStore.weather.list"
           :day="day"
@@ -26,7 +26,15 @@
       />
     </div>
     <div class="week__change-location">
-      <button class="week__btn-location">
+      <input v-model="location"
+             ref="inputRef"
+             v-if="isChangeLocation"
+             @keyup.enter="onChangeLocation"
+             @keyup.esc="isChangeLocation = false"
+             class="week__input-location" type="text">
+      <button @click="hiddenBtnLocation"
+              v-else
+              class="week__btn-location">
         <img class="week__icon-location" src="@/assets/location.png" alt="">
         Change Location
       </button>
@@ -36,7 +44,7 @@
 
 <script lang="ts" setup>
 import WeatherWeekOneDay from './WeatherWeekOneDay.vue'
-import {defineEmits, ref} from "vue";
+import {defineEmits, nextTick, ref} from "vue";
 import {useWeatherStore} from "@/stores/WeatherStore";
 import oneWeatherDay from "@/types/oneWeatherDay";
 
@@ -49,9 +57,10 @@ const emit = defineEmits<{
 const pressure = ref(0)
 const humidity = ref(0)
 const wind = ref(0)
-const isActiveDay = ref([true, false, false,false])
+const isActiveDay = ref([true, false, false, false])
+
 function onChangeDate(payload: oneWeatherDay) {
-  if(payload.pressure && payload.humidity && payload.wind){
+  if (payload.pressure && payload.humidity && payload.wind) {
     pressure.value = payload.pressure
     humidity.value = payload.humidity
     wind.value = payload.wind
@@ -63,12 +72,44 @@ function changeActiveDay(i: number): void {
   isActiveDay.value = [false, false, false, false]
   isActiveDay.value[i] = true
 }
+
 // const changeEmitName = 'onChangeDay';
 // const emit = defineEmits<{(e: typeof changeEmitName, id: number): void }>();
 // const onChangeDay = (event: Event) => {
 //   const target = event.target as HTMLInputElement;
 //   emit(changeEmitName, target.value);
 // }
+
+const location = ref('Moscow')
+const isChangeLocation = ref(false)
+const inputRef = ref<null | { focus: () => null }>(null)
+
+function onChangeLocation(evt: Event) {
+  const elm = evt.currentTarget as HTMLInputElement
+  elm.style.outlineColor = 'black'
+  weatherStore.getCity = location.value
+  weatherStore.getWeather()
+
+  setTimeout(() => {
+    if (!weatherStore.isRequest) {
+      elm.style.outlineColor = 'red'
+      isChangeLocation.value = true
+    } else {
+      isChangeLocation.value = false
+    }
+  }, 500)
+
+
+}
+
+function hiddenBtnLocation() {
+  isChangeLocation.value = true
+  nextTick(() => {
+    inputRef.value?.focus()
+  })
+
+}
+
 </script>
 
 <style scoped>
@@ -126,5 +167,15 @@ function changeActiveDay(i: number): void {
 .week__icon-location {
   width: 23px;
   margin-right: 8px;
+}
+
+.week__input-location {
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 24px;
+  width: 100%;
+  border: none;
+  padding: 15px;
+  border-radius: 10px;
 }
 </style>
